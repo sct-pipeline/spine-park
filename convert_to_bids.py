@@ -82,19 +82,19 @@ def convert_mri_to_bids(path_in, path_out):
                         new_filename, bids_subfolder = determine_scan_type_and_bids_path(filename, bids_patient_id, dwi_chunk_counter)
                         if new_filename:
                             # Handle NIfTI files
-                            zip_and_move_nifti(os.path.join(dirpath, filename), os.path.join(bids_path, bids_subfolder, new_filename))
+                            zip_and_move_file(os.path.join(dirpath, filename), os.path.join(bids_path, bids_subfolder, new_filename), zip_file=True)
                             
                             # Handle associated JSON files
                             json_filename = filename.replace('.nii', '.json')
                             if json_filename in filenames:
-                                shutil.copy(os.path.join(dirpath, json_filename), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', '.json')))
+                                zip_and_move_file(os.path.join(dirpath, json_filename), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', '.json')))
                             
                             # Handle DWI additional files
                             if 'DWI' in new_filename:
                                 for ext in ['.bval', '.bvec']:
                                     dwi_file = filename.replace('.nii', ext)
                                     if dwi_file in filenames:
-                                        shutil.copy(os.path.join(dirpath, dwi_file), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', ext)))
+                                        zip_and_move_file(os.path.join(dirpath, dwi_file), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', ext)))
                                 dwi_chunk_counter += 1
                         else:
                             print(f"❌ {filename}")
@@ -126,25 +126,34 @@ def determine_scan_type_and_bids_path(filename, patient_id, dwi_chunk_counter):
     return None, None
 
 
-def zip_and_move_nifti(src_path, dest_path):
-    """Zips and moves a NIfTI file.
+def zip_and_move_file(src_path, dest_path, zip_file=False):
+    """Zips and moves a file.
 
     Args:
         src_path (_type_): _description_
         dest_path (_type_): _description_
+        zip (_type_): _description_
     """
     # Create output directory if it does not exist
     dest_dir = os.path.dirname(dest_path)
     os.makedirs(dest_dir, exist_ok=True)
     # Zip and move the NIfTI file
-    with open(src_path, 'rb') as f_in, gzip.open(dest_path, 'wb') as f_out:
-        print(f"✅ {src_path} -> {dest_path}")
-        shutil.copyfileobj(f_in, f_out)
+    if zip_file:
+        with open(src_path, 'rb') as f_in, gzip.open(dest_path, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
+    else:
+        shutil.copy(src_path, dest_path)
+
+    print(f"✅ {src_path} -> {dest_path}")
 
 
 def main(path_in, path_out):
-    # This is where you would add the code to process the MRI files according to BIDS
-    # For demonstration, let's just print the paths to show it's working
+    """Main function to convert MRI files to BIDS format.
+
+    Args:
+        path_in (_type_): _description_
+        path_out (_type_): _description_
+    """
     print(f"Convert data to BIDS format.\n\n"
           f"Input: {path_in}\n"
           f"Output: {path_out}") 
