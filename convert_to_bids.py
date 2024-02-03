@@ -72,6 +72,8 @@ def convert_mri_to_bids(root_dir):
                                     if dwi_file in filenames:
                                         shutil.copy(os.path.join(dirpath, dwi_file), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', ext)))
                                 dwi_chunk_counter += 1
+                        else:
+                            print(f"Ignoring file: {filename}")
 
 
 def determine_scan_type_and_bids_path(filename, patient_id, dwi_chunk_counter):
