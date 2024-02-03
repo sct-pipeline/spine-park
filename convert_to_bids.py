@@ -46,7 +46,7 @@ def convert_mri_to_bids(root_dir):
                 continue  # Skip directory if patient ID cannot be determined
             
             bids_path = os.path.join(path_out, bids_patient_id)
-            os.makedirs(bids_path, exist_ok=True)
+            # os.makedirs(bids_path, exist_ok=True)
 
             # Counters for DWI chunks
             dwi_chunk_counter = 1
@@ -109,7 +109,10 @@ def zip_and_move_nifti(src_path, dest_path):
         src_path (_type_): _description_
         dest_path (_type_): _description_
     """
-
+    # Create output directory if it does not exist
+    dest_dir = os.path.dirname(dest_path)
+    os.makedirs(dest_dir, exist_ok=True)
+    # Zip and move the NIfTI file
     with open(src_path, 'rb') as f_in, gzip.open(dest_path, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
 
