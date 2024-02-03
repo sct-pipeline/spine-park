@@ -62,7 +62,8 @@ def convert_mri_to_bids(root_dir):
         patient_path = os.path.join(root_dir, patient_dir)
         if os.path.isdir(patient_path):
             bids_patient_id = extract_patient_id(patient_dir)
-            print(f"{patient_dir} -> {bids_patient_id}")
+            print(f"\n{patient_dir} -> {bids_patient_id}")
+            print(f"============================================================================")
             if not bids_patient_id:
                 print(f"Could not determine BIDS patient ID for directory: {patient_dir}")
                 continue  # Skip directory if patient ID cannot be determined
@@ -94,7 +95,7 @@ def convert_mri_to_bids(root_dir):
                                         shutil.copy(os.path.join(dirpath, dwi_file), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', ext)))
                                 dwi_chunk_counter += 1
                         else:
-                            print(f"Ignoring file: {filename}")
+                            print(f"❌ {filename}")
 
 
 def determine_scan_type_and_bids_path(filename, patient_id, dwi_chunk_counter):
@@ -135,6 +136,7 @@ def zip_and_move_nifti(src_path, dest_path):
     os.makedirs(dest_dir, exist_ok=True)
     # Zip and move the NIfTI file
     with open(src_path, 'rb') as f_in, gzip.open(dest_path, 'wb') as f_out:
+        print(f"✅ {src_path} -> {dest_path}")
         shutil.copyfileobj(f_in, f_out)
 
 
