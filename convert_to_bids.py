@@ -163,7 +163,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.path_in, args.path_out)
-
-
-# root_directory = "/Users/julien/temp/20240122_Lydia/CENIR_ICEBERG_spine"
-# path_out = "/Users/julien/temp/20240122_Lydia/CENIR_ICEBERG_spine_BIDS"
