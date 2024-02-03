@@ -16,4 +16,6 @@ cd spine-park
 
 ### Convert data to BIDS
 
+~~~
 python convert_to_bids.py <PATH_TO_INPUT_MRI_DATA> <PATH_TO_OUTPUT_BIDS_DATA>
+~~~
