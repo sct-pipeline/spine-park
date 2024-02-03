@@ -88,17 +88,17 @@ def determine_scan_type_and_bids_path(filename, patient_id, dwi_chunk_counter):
         _type_: _description_
     """
     if "T2_SAG" in filename:
-        return f"sub-{patient_id}_T2.nii.gz", "anat"
+        return f"{patient_id}_T2.nii", "anat"
     elif "DTI_64DIR" in filename:
-        return f"sub-{patient_id}_chunk-{dwi_chunk_counter}_DWI.nii.gz", "dwi"
+        return f"{patient_id}_chunk-{dwi_chunk_counter}_DWI.nii", "dwi"
     elif "T1_SAG_MT_FL3D" in filename:
-        return f"sub-{patient_id}_mt-on_MTS.nii.gz", "anat"
+        return f"{patient_id}_mt-on_MTS.nii", "anat"
     elif "T1_SAG_FL3D" in filename:
-        return f"sub-{patient_id}_mt-off_MTS.nii.gz", "anat"
+        return f"{patient_id}_mt-off_MTS.nii", "anat"
     elif "mp2rage_sag_p3_1mm_iso_T1" in filename:
-        return f"sub-{patient_id}_T1map.nii.gz", "anat"
+        return f"{patient_id}_T1map.nii", "anat"
     elif "mp2rage_sag_p3_1mm_iso_UNI" in filename:
-        return f"sub-{patient_id}_UNIT1.nii.gz", "anat"
+        return f"{patient_id}_UNIT1.nii", "anat"
     return None, None
 
 
