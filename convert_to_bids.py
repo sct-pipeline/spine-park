@@ -16,6 +16,7 @@ Author: Julien Cohen-Adad
 """
 
 
+import argparse
 import os
 import gzip
 import shutil
@@ -52,14 +53,15 @@ def extract_patient_id(dirname):
     return patient_id
 
 
-def convert_mri_to_bids(root_dir):
+def convert_mri_to_bids(path_in, path_out):
     """Converts the MRI data to BIDS format.
 
     Args:
-        root_dir (_type_): Directory containing the MRI data.
+        path_in (_type_): _description_
+        path_out (_type_): _description_
     """
-    for patient_dir in os.listdir(root_dir):
-        patient_path = os.path.join(root_dir, patient_dir)
+    for patient_dir in os.listdir(path_in):
+        patient_path = os.path.join(path_in, patient_dir)
         if os.path.isdir(patient_path):
             bids_patient_id = extract_patient_id(patient_dir)
             print(f"\n{patient_dir} -> {bids_patient_id}")
@@ -140,6 +142,28 @@ def zip_and_move_nifti(src_path, dest_path):
         shutil.copyfileobj(f_in, f_out)
 
 
-root_directory = "/Users/julien/temp/20240122_Lydia/CENIR_ICEBERG_spine"
-path_out = "/Users/julien/temp/20240122_Lydia/CENIR_ICEBERG_spine_BIDS"
-convert_mri_to_bids(root_directory)
+def main(path_in, path_out):
+    # This is where you would add the code to process the MRI files according to BIDS
+    # For demonstration, let's just print the paths to show it's working
+    print(f"Convert data to BIDS format.\n\n"
+          f"Input: {path_in}\n"
+          f"Output: {path_out}") 
+    convert_mri_to_bids(path_in, path_out)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Convert MRI files to BIDS format and zip NIfTI files.",
+        epilog="Example usage:\n"
+           "python convert_to_bids.py /path/to/mri/files /path/to/bids/output",
+           formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("path_in", help="Root directory of the MRI files")
+    parser.add_argument("path_out", help="Output directory for BIDS-structured files")
+
+    args = parser.parse_args()
+
+    main(args.path_in, args.path_out)
+
+
+# root_directory = "/Users/julien/temp/20240122_Lydia/CENIR_ICEBERG_spine"
+# path_out = "/Users/julien/temp/20240122_Lydia/CENIR_ICEBERG_spine_BIDS"
