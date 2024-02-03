@@ -1,7 +1,24 @@
+"""Converts the CENIR ICEBERG spine MRI data to BIDS format.
+
+This script is specific to the CENIR ICEBERG spine data and should not be used for other data.
+The script assumes that the input data is organized as follows:
+- A root directory containing one directory per patient
+- Each patient directory contains one or more directories containing the MRI data
+- The MRI data directories contain the NIfTI files and associated JSON files
+- NIfTI files are assumed to be in the .nii format
+The script will create a new directory containing the BIDS-converted data.
+The script will also zip the NIfTI files to save space.
+The script will also handle the DWI data, which is split into multiple chunks.
+The script will also handle the additional files associated with the DWI data (bval, bvec).
+The script will also handle the T1 mapping data, which is split into two files (mt-on and mt-off).
+
+Author: Julien Cohen-Adad
+"""
+
+
 import os
 import gzip
 import shutil
-import re
 
 
 def extract_patient_id(dirname):
@@ -36,6 +53,11 @@ def extract_patient_id(dirname):
 
 
 def convert_mri_to_bids(root_dir):
+    """Converts the MRI data to BIDS format.
+
+    Args:
+        root_dir (_type_): Directory containing the MRI data.
+    """
     for patient_dir in os.listdir(root_dir):
         patient_path = os.path.join(root_dir, patient_dir)
         if os.path.isdir(patient_path):
@@ -46,7 +68,6 @@ def convert_mri_to_bids(root_dir):
                 continue  # Skip directory if patient ID cannot be determined
             
             bids_path = os.path.join(path_out, bids_patient_id)
-            # os.makedirs(bids_path, exist_ok=True)
 
             # Counters for DWI chunks
             dwi_chunk_counter = 1
