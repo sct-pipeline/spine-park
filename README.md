@@ -19,3 +19,9 @@ cd spine-park
 ~~~
 python convert_to_bids.py <PATH_TO_INPUT_MRI_DATA> <PATH_TO_OUTPUT_BIDS_DATA>
 ~~~
+
+### Run processing across all subjects
+
+~~~
+sct_run_batch -script batch_processing.sh -path-data <PATH_TO_OUTPUT_BIDS_DATA> -path-output <PATH_TO_RESULTS> -jobs -1
+~~~
