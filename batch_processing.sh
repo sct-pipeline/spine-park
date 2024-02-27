@@ -192,7 +192,7 @@ file_uni_seg="${FILESEG}"
 sct_register_multimodal -i "${SCT_DIR}"/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg "${SCT_DIR}"/data/PAM50/template/PAM50_cord.nii.gz \
                         -d "${file_uni}".nii.gz \
-                        -dseg "${file_uni_seg}"_seg.nii.gz \
+                        -dseg "${file_uni_seg}".nii.gz \
                         -param step=1,type=seg,algo=centermass:step=2,type=im,algo=bsplinesyn,slicewise=0,iter=3 \
                         -initwarp warp_template2anat.nii.gz \
                         -initwarpinv warp_anat2template.nii.gz \
