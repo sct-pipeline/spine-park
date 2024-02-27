@@ -228,9 +228,8 @@ cd ../dwi
 files_dwi=(`ls "${SUBJECT}"_chunk-*_DWI.nii.gz`)
 for file_dwi in "${files_dwi[@]}"; do
   echo "👉 Processing: ${file_dwi}"
-  # TODO
-  file_bval=${file_dwi}.bval
-  file_bvec=${file_dwi}.bvec
+  file_bval="${file_dwi%.nii.gz}.bval"
+  file_bvec="${file_dwi%.nii.gz}.bvec"
   # Separate b=0 and DW images
   sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
   # Segment spinal cord
@@ -253,36 +252,25 @@ for file_dwi in "${files_dwi[@]}"; do
                           -initwarp ../anat/warp_template2T1w.nii.gz -initwarpinv ../anat/warp_T1w2template.nii.gz \
                           -qc "${PATH_QC}"
 
+  # TO CONTINUE...
   # DON'T DO THAT! VARIOUS CHUNKS 
   # Rename warping field for clarity
-  mv warp_PAM50_t12${file_dwi_mean}.nii.gz warp_template2dwi.nii.gz
-  mv warp_${file_dwi_mean}2PAM50_t1.nii.gz warp_dwi2template.nii.gz
-
-
-# Warp template
-sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -qc ${PATH_QC} -qc-subject ${SUBJECT}
-# Create mask around the spinal cord (for faster computing)
-sct_maths -i ${file_dwi_seg}.nii.gz -dilate 1 -shape ball -o ${file_dwi_seg}_dil.nii.gz
-# Compute DTI
-sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -m ${file_dwi_seg}_dil.nii.gz
-# Compute FA, MD and RD in WM between C2 and C5 vertebral levels
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_FA.csv -append 1
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_MD.csv -append 1
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_RD.csv -append 1
-#Compute dti_FA in dorsal columns, lateral corticospinal tracts, lateral reticulospinal tracts
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 53 -vert 2:5 -o ${PATH_RESULTS}/DWI_FA_in_DC.csv -append 1
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 4,5 -vert 2:5 -o ${PATH_RESULTS}/DWI_FA_in_CST.csv -append 1
-sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 10,11 -vert 2:5 -o ${PATH_RESULTS}/DWI_FA_in_RST.csv -append 1
-#Compute dti_MD in dorsal columns, lateral corticospinal tracts, lateral reticulospinal tracts
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 53 -vert 2:5 -o ${PATH_RESULTS}/DWI_MD_in_DC.csv -append 1
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 4,5 -vert 2:5 -o ${PATH_RESULTS}/DWI_MD_in_CST.csv -append 1
-sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 10,11 -vert 2:5 -o ${PATH_RESULTS}/DWI_MD_in_RST.csv -append 1
-#Compute dti_RD in dorsal columns, lateral corticospinal tracts, lateral reticulospinal tracts
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 53 -vert 2:5 -o ${PATH_RESULTS}/DWI_RD_in_DC.csv -append 1
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 4,5 -vert 2:5 -o ${PATH_RESULTS}/DWI_RD_in_CST.csv -append 1
-sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 10,11 -vert 2:5 -o ${PATH_RESULTS}/DWI_RD_in_RST.csv -append 1
+  # mv warp_PAM50_t12${file_dwi_mean}.nii.gz warp_template2dwi.nii.gz
+  # mv warp_${file_dwi_mean}2PAM50_t1.nii.gz warp_dwi2template.nii.gz
+  # # Warp template
+  # sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -qc ${PATH_QC} -qc-subject ${SUBJECT}
+  # # Create mask around the spinal cord (for faster computing)
+  # sct_maths -i ${file_dwi_seg}.nii.gz -dilate 1 -shape ball -o ${file_dwi_seg}_dil.nii.gz
+  # # Compute DTI
+  # sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -m ${file_dwi_seg}_dil.nii.gz
+  # # Compute FA, MD and RD in WM between C2 and C5 vertebral levels
+  # sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_FA.csv -append 1
+  # sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_MD.csv -append 1
+  # sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_RD.csv -append 1
 
 done
+# TODO
+# Average metrics within vertebral levels from output CSV files
 
 # Go back to parent folder
 cd ..
