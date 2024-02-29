@@ -233,10 +233,9 @@ cd ../dwi
 files_dwi=(`ls "${SUBJECT}"_chunk-*_DWI.nii.gz`)
 for file_dwi in "${files_dwi[@]}"; do
   echo "👉 Processing: ${file_dwi}"
-  file_bval="${file_dwi%.nii.gz}.bval"
-  file_bvec="${file_dwi%.nii.gz}.bvec"
+  file_dwi="${file_dwi%.nii.gz}"
   # Separate b=0 and DW images
-  sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
+  sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_dwi}.bvec
   # Segment spinal cord
   segment_if_does_not_exist "${file_dwi}" "dwi"
   file_dwi_seg="${FILESEG}"
