@@ -237,7 +237,7 @@ for file_dwi in "${files_dwi[@]}"; do
   # Separate b=0 and DW images
   sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_dwi}.bvec
   # Segment spinal cord
-  segment_if_does_not_exist "${file_dwi}" "dwi"
+  segment_if_does_not_exist "${file_dwi}"_dwi_mean "dwi"
   file_dwi_seg="${FILESEG}"
   # Crop data for faster processing
   sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
