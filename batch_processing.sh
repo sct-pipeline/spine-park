@@ -252,8 +252,8 @@ for file_dwi in "${files_dwi[@]}"; do
   sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                           -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \
                           -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
-                          -param step=1,type=seg,algo=centermass:step=2,type=im,algo=syn,metric=CC,iter=5,gradStep=0.5 \
-                          -initwarp ../anat/warp_template2T1w.nii.gz -initwarpinv ../anat/warp_T1w2template.nii.gz \
+                          -param step=1,type=seg,algo=centermass:step=2,type=im,algo=bsplinesyn,metric=CC,slicewise=1,iter=3,gradStep=0.5 \
+                          -initwarp ../anat/warp_template2anat.nii.gz -initwarpinv ../anat/warp_anat2template.nii.gz \
                           -qc "${PATH_QC}"
 
   # TO CONTINUE...
