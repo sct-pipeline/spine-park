@@ -191,6 +191,8 @@ file_uni_seg="${FILESEG}"
 # Crop data for faster processing
 sct_crop_image -i "${file_uni}".nii.gz -m "${file_uni_seg}".nii.gz -dilate 5x5x0 -o "${file_uni}"_crop.nii.gz
 file_uni="${file_uni}"_crop
+sct_crop_image -i "${file_t1}".nii.gz -m "${file_uni_seg}".nii.gz -dilate 5x5x0 -o "${file_t1}"_crop.nii.gz
+file_t1="${file_t1}"_crop
 # Register template->UNIT1
 sct_register_multimodal -i "${SCT_DIR}"/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg "${SCT_DIR}"/data/PAM50/template/PAM50_cord.nii.gz \
