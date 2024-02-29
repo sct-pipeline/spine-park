@@ -136,8 +136,8 @@ echo "👉 Processing: ${file_mt0}"
 segment_if_does_not_exist "${file_mt0}" "t1"
 file_mt0_seg="${FILESEG}"
 # Crop data for faster processing
-sct_crop_image -i "${file_mt0}".nii.gz -m "${file_mt0_seg}".nii.gz -dilate 40x40x0 -o "${file_mt0}"_crop.nii.gz
-sct_crop_image -i "${file_mt0_seg}".nii.gz -m "${file_mt0_seg}".nii.gz -dilate 40x40x0 -o "${file_mt0}"_crop_seg.nii.gz
+sct_crop_image -i "${file_mt0}".nii.gz -m "${file_mt0_seg}".nii.gz -dilate 10x10x0 -o "${file_mt0}"_crop.nii.gz
+sct_crop_image -i "${file_mt0_seg}".nii.gz -m "${file_mt0_seg}".nii.gz -dilate 10x10x0 -o "${file_mt0}"_crop_seg.nii.gz
 file_mt0="${file_mt0}"_crop
 # Register mt1->mt0
 # Tips: here we only use rigid transformation because both images have very
@@ -188,6 +188,9 @@ echo "👉 Processing: ${file_uni}"
 # Segment spinal cord
 segment_if_does_not_exist "${file_uni}" "t1"
 file_uni_seg="${FILESEG}"
+# Crop data for faster processing
+sct_crop_image -i "${file_uni}".nii.gz -m "${file_uni_seg}".nii.gz -dilate 5x5x0 -o "${file_uni}"_crop.nii.gz
+file_uni="${file_uni}"_crop
 # Register template->UNIT1
 sct_register_multimodal -i "${SCT_DIR}"/data/PAM50/template/PAM50_t1.nii.gz \
                         -iseg "${SCT_DIR}"/data/PAM50/template/PAM50_cord.nii.gz \
@@ -236,7 +239,7 @@ for file_dwi in "${files_dwi[@]}"; do
   segment_if_does_not_exist "${file_dwi}" "dwi"
   file_dwi_seg="${FILESEG}"
   # Crop data for faster processing
-  sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 30x30x0 -o "${file_dwi}"_crop.nii.gz
+  sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
   # Motion correction
   sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_dwi}.bvec -x spline
   file_dwi=${file_dwi}_moco
