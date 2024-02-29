@@ -234,15 +234,17 @@ files_dwi=(`ls "${SUBJECT}"_chunk-*_DWI.nii.gz`)
 for file_dwi in "${files_dwi[@]}"; do
   echo "👉 Processing: ${file_dwi}"
   file_dwi="${file_dwi%.nii.gz}"
+  file_bvec=${file_dwi}.bvec
+  file_bval=${file_dwi}.bval
   # Separate b=0 and DW images
-  sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_dwi}.bvec
+  sct_dmri_separate_b0_and_dwi -i ${file_dwi}.nii.gz -bvec ${file_bvec}
   # Segment spinal cord
   segment_if_does_not_exist "${file_dwi}"_dwi_mean "dwi"
   file_dwi_seg="${FILESEG}"
   # Crop data for faster processing
   sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
   # Motion correction
-  sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_dwi}.bvec -x spline
+  sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline
   file_dwi=${file_dwi}_moco
   file_dwi_mean=${file_dwi}_dwi_mean
   # Segment spinal cord (only if it does not exist)
@@ -255,22 +257,13 @@ for file_dwi in "${files_dwi[@]}"; do
                           -param step=1,type=seg,algo=centermass:step=2,type=im,algo=bsplinesyn,metric=CC,slicewise=1,iter=3,gradStep=0.5 \
                           -initwarp ../anat/warp_template2anat.nii.gz -initwarpinv ../anat/warp_anat2template.nii.gz \
                           -qc "${PATH_QC}"
-
-  # TO CONTINUE...
-  # DON'T DO THAT! VARIOUS CHUNKS 
-  # Rename warping field for clarity
-  # mv warp_PAM50_t12${file_dwi_mean}.nii.gz warp_template2dwi.nii.gz
-  # mv warp_${file_dwi_mean}2PAM50_t1.nii.gz warp_dwi2template.nii.gz
-  # # Warp template
-  # sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_template2dwi.nii.gz -qc ${PATH_QC} -qc-subject ${SUBJECT}
-  # # Create mask around the spinal cord (for faster computing)
-  # sct_maths -i ${file_dwi_seg}.nii.gz -dilate 1 -shape ball -o ${file_dwi_seg}_dil.nii.gz
-  # # Compute DTI
-  # sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -m ${file_dwi_seg}_dil.nii.gz
-  # # Compute FA, MD and RD in WM between C2 and C5 vertebral levels
-  # sct_extract_metric -i dti_FA.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_FA.csv -append 1
-  # sct_extract_metric -i dti_MD.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_MD.csv -append 1
-  # sct_extract_metric -i dti_RD.nii.gz -f label/atlas -l 51 -vert 2:5 -o ${PATH_RESULTS}/DWI_RD.csv -append 1
+  # Warp template
+  sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_PAM50_t12${file_dwi_mean}.nii.gz -ofolder label_${file_dwi} -qc ${PATH_QC} -qc-subject ${SUBJECT}
+  # Compute DTI
+  sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard
+  # Compute DTI metrics in WM
+  sct_extract_metric -i dti_FA.nii.gz -f label_${file_dwi}/atlas -l 51 -vert "${vertebral_levels}" \
+                     -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${PATH_RESULTS}/DWI_FA.csv -append 1
 
 done
 # TODO
