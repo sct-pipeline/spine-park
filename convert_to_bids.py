@@ -97,7 +97,7 @@ def convert_mri_to_bids(path_in, path_out):
                                         zip_and_move_file(os.path.join(dirpath, dwi_file), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', ext)))
                                 dwi_chunk_counter += 1
                         else:
-                            print(f"❌ {filename}")
+                            print(f"❌ {os.path.join(dirpath, filename)}")
 
 
 def determine_scan_type_and_bids_path(filename, patient_id, dwi_chunk_counter):
