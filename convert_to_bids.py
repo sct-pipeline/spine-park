@@ -60,7 +60,7 @@ def convert_mri_to_bids(path_in, path_out):
         path_in (_type_): _description_
         path_out (_type_): _description_
     """
-    for patient_dir in os.listdir(path_in):
+    for patient_dir in sorted(os.listdir(path_in)):
         patient_path = os.path.join(path_in, patient_dir)
         if os.path.isdir(patient_path):
             bids_patient_id = extract_patient_id(patient_dir)
@@ -75,7 +75,7 @@ def convert_mri_to_bids(path_in, path_out):
             # Counters for DWI chunks
             dwi_chunk_counter = 1
 
-            for dirpath, _, filenames in os.walk(patient_path):
+            for dirpath, _, filenames in sorted(os.walk(patient_path)):
                 for filename in filenames:
                     if filename.endswith(".nii"):
                         # Determine the type of scan and set the BIDS path
@@ -97,7 +97,7 @@ def convert_mri_to_bids(path_in, path_out):
                                         zip_and_move_file(os.path.join(dirpath, dwi_file), os.path.join(bids_path, bids_subfolder, new_filename.replace('.nii.gz', ext)))
                                 dwi_chunk_counter += 1
                         else:
-                            print(f"❌ {filename}")
+                            print(f"❌ {os.path.join(dirpath, filename)}")
 
 
 def determine_scan_type_and_bids_path(filename, patient_id, dwi_chunk_counter):
