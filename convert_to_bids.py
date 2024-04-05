@@ -75,7 +75,7 @@ def convert_mri_to_bids(path_in, path_out):
             # Counters for DWI chunks
             dwi_chunk_counter = 1
 
-            for dirpath, _, filenames in os.walk(patient_path):
+            for dirpath, _, filenames in sorted(os.walk(patient_path)):
                 for filename in filenames:
                     if filename.endswith(".nii"):
                         # Determine the type of scan and set the BIDS path
