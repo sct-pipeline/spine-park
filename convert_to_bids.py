@@ -60,7 +60,7 @@ def convert_mri_to_bids(path_in, path_out):
         path_in (_type_): _description_
         path_out (_type_): _description_
     """
-    for patient_dir in os.listdir(path_in):
+    for patient_dir in sorted(os.listdir(path_in)):
         patient_path = os.path.join(path_in, patient_dir)
         if os.path.isdir(patient_path):
             bids_patient_id = extract_patient_id(patient_dir)
