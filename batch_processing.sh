@@ -277,8 +277,9 @@ cd ..
 # Verify presence of output files and write log file if error
 # ======================================================================================================================
 FILES_TO_CHECK=(
-  "${file_t2_seg}".nii.gz
-  mtr.nii.gz
+  "anat/${file_t2_seg}".nii.gz
+  "anat/mtr.nii.gz"
+  "dwi/dti_FA.nii.gz"
 )
 for file in "${FILES_TO_CHECK[@]}"; do
   if [ ! -e "${file}" ]; then
