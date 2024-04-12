@@ -260,9 +260,9 @@ for file_dwi in "${files_dwi[@]}"; do
   # Warp template
   sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_PAM50_t12${file_dwi_mean}.nii.gz -ofolder label_${file_dwi} -qc ${PATH_QC} -qc-subject ${SUBJECT}
   # Compute DTI
-  sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard
+  sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -o ${file_dwi}_
   # Compute DTI metrics in WM
-  sct_extract_metric -i dti_FA.nii.gz -f label_${file_dwi}/atlas -l 51 -vert "${vertebral_levels}" \
+  sct_extract_metric -i ${file_dwi}_FA.nii.gz -f label_${file_dwi}/atlas -l 51 -vert "${vertebral_levels}" \
                      -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${PATH_RESULTS}/DWI_FA.csv -append 1
 
 done
@@ -273,13 +273,12 @@ done
 cd ..
 
 
-
 # Verify presence of output files and write log file if error
 # ======================================================================================================================
 FILES_TO_CHECK=(
   "anat/${file_t2_seg}".nii.gz
   "anat/mtr.nii.gz"
-  "dwi/dti_FA.nii.gz"
+  "dwi/${file_dwi}_FA.nii.gz"
 )
 for file in "${FILES_TO_CHECK[@]}"; do
   if [ ! -e "${file}" ]; then
