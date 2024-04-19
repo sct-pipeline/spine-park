@@ -36,6 +36,46 @@ trap "echo Caught Keyboard Interrupt within script. Exiting now.; exit" INT
 # CONVENIENCE FUNCTIONS
 # =====================================================================================================================
 
+label_with_spineps(){
+    local img_path=$(realpath "$1")
+    local out_path="$2"
+    local contrast="$3"
+    local img_name="$(basename "$img_path")"
+    (
+        # Create temporary directory
+        tmpdir="$(mktemp -d)"
+        echo "$tmpdir" was created
+
+        # Copy image to temporary directory
+        tmp_img_path="${tmpdir}/${img_name}"
+        cp "$img_path" "$tmp_img_path"
+
+        # Activate conda env
+        eval "$(conda shell.bash hook)"
+        conda activate spineps
+
+        # Select semantic weights
+        if [ "$contrast" = "t1" ];
+            then semantic=t1w_segmentor;
+            else semantic=t2w_segmentor_2.0;
+        fi
+        
+        # Run SPINEPS on image
+        spineps sample -i "$tmp_img_path" -model_semantic "$semantic" -model_instance inst_vertebra_3.0 -dn derivatives
+        
+        # Run vertebral labeling with SPINEPS vertebrae prediction
+        vert_path="$(echo ${tmpdir}/derivatives/*_seg-vert_msk.nii.gz)"
+        python3 "${IVADOMED_UTILITIES_REPO}/training_scripts/generate_discs_labels_with_SPINEPS.py" --path-vert "$vert_path" --path-out "$out_path"
+
+        # Remove temporary directory
+        rm -r "$tmpdir"
+        echo "$tmpdir" was removed
+
+        # Deactivate conda environment
+        conda deactivate
+    )
+}
+
 label_if_does_not_exist() {
   # This function checks if a manual label file already exists, then:
   #   - If it does, copy it locally.
@@ -54,8 +94,11 @@ label_if_does_not_exist() {
     rsync -avzh "${FILELABELMANUAL}" "${FILELABEL}".nii.gz
   else
     echo "Not found. Proceeding with automatic labeling."
+    # Generate discs labels
+    FILEDISC="${file}"_discs
+    label_with_spineps "${file}".nii.gz "${FILEDISC}".nii.gz "t2"
     # Generate labeled segmentation
-    sct_label_vertebrae -i "${file}".nii.gz -s "${file_seg}".nii.gz -c t2 -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
+    sct_label_vertebrae -i "${file}".nii.gz -s "${file_seg}".nii.gz -c t2 -discfile "${FILEDISC}".nii.gz -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
     # Create labels in the cord at the specified mid-vertebral levels
     sct_label_utils -i "${file_seg}"_labeled.nii.gz -vert-body "${label_values}" -o "${FILELABEL}".nii.gz
   fi
