@@ -262,9 +262,11 @@ for file_dwi in "${files_dwi[@]}"; do
   # Compute DTI
   sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -o ${file_dwi}_
   # Compute DTI metrics in WM
-  sct_extract_metric -i ${file_dwi}_FA.nii.gz -f label_${file_dwi}/atlas -l 51 -vert "${vertebral_levels}" \
-                     -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${PATH_RESULTS}/DWI_FA.csv -append 1
-
+  dti_metrics=(FA MD RD AD)
+  for dti_metric in ${dti_metrics[@]}; do
+    sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l 51 -vert "${vertebral_levels}" \
+                      -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${PATH_RESULTS}/DWI_${dti_metric}.csv -append 1
+  done
 done
 # TODO
 # Average metrics within vertebral levels from output CSV files
