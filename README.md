@@ -49,6 +49,7 @@ The procedure is as follows:
 correction, you won't have to re-do the labels that you already did. 
 
 Here is a video tutorial:
+
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/IgJUu5CCHxY/0.jpg)](https://www.youtube.com/watch?v=IgJUu5CCHxY)
 
 ### Run processing across all subjects
