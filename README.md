@@ -48,6 +48,9 @@ The procedure is as follows:
 - If you want to quit and resume later, click on the Terminal window and press CTRL+C (`KeyboardInterrupt`). The `manual-correction` software will quit, and the `config.yml` will be modified such that the next time you re-run manual 
 correction, you won't have to re-do the labels that you already did. 
 
+Here is a video tutorial:
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/IgJUu5CCHxY/0.jpg)](https://www.youtube.com/watch?v=IgJUu5CCHxY)
+
 ### Run processing across all subjects
 
 ~~~
