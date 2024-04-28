@@ -7,6 +7,7 @@ Pipeline for multicontrast analysis in PD patients.
 ### Install dependencies
 
 [Install Spinal Cord Toolbox](https://spinalcordtoolbox.com/user_section/installation.html)
+[Install manual-correction](https://github.com/spinalcordtoolbox/manual-correction?tab=readme-ov-file#2-installation)
 
 Clone this repository
 ```
@@ -14,22 +15,49 @@ git clone https://github.com/sct-pipeline/spine-park.git
 cd spine-park
 ```
 
+### Declare variables
+
+```bash
+PATH_DATA_RAW=<PATH TO ORIGINAL NIFTI DATASET>
+PATH_DATA_BIDS=<PATH TO OUTPUT BIDS DATASET>
+```
+
 ### Convert data to BIDS
 
 ~~~
-python convert_to_bids.py <PATH_TO_INPUT_MRI_DATA> <PATH_TO_OUTPUT_BIDS_DATA>
+python convert_to_bids.py $PATH_DATA_RAW $PATH_DATA_BIDS
 ~~~
+
+### Perform manual vertebral labeling
+
+Because automatic vertebral labeling is unreliable on this dataset (see #21 #24), manual labeling should be done instead.
+The procedure is as follows:
+- Install `manual-correction` (see [Install dependencies](#install-dependencies))
+- Go in the folder:
+  ```bash
+  cd manual-correction
+  ```
+- Create a configuration file that lists all subjects in the dataset
+  ```bash
+  echo "FILES_LABEL:" > config.yml && find $PATH_DATA_BIDS -type f -name "*_T2.nii.gz" -exec basename {} \; | awk '{print "- " $0}' >> config.yml
+  ```
+- Perform manual labeling of discs by running this commmand:
+  ```bash
+  python manual_correction.py -path-img $PATH_DATA_BIDS -config config.yml
+  ```
+- If you want to quit and resume later, click on the Terminal window and press CTRL+C (`KeyboardInterrupt`). The `manual-correction` software will quit, and the `config.yml` will be modified such that the next time you re-run manual 
+correction, you won't have to re-do the labels that you already did. 
 
 ### Run processing across all subjects
 
 ~~~
-sct_run_batch -script batch_processing.sh -path-data <PATH_TO_OUTPUT_BIDS_DATA> -path-output <PATH_TO_RESULTS> -jobs -1
+sct_run_batch -script batch_processing.sh -path-data <PATH_DATA_BIDS> -path-output <PATH_RESULTS> -jobs -1
 ~~~
 
 To only run the processing in one subject (for debugging purpose), use this:
 
 ~~~
-sct_run_batch -script batch_processing.sh -path-data <PATH_TO_OUTPUT_BIDS_DATA> -path-output <PATH_TO_RESULTS> -include-list sub-BB277
+sct_run_batch -script batch_processing.sh -path-data <PATH_DATA_BIDS> -path-output <PATH_RESULTS> -include-list sub-BB277
 ~~~
 
 ### Run QC and manually correct the segmentations
