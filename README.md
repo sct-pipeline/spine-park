@@ -55,13 +55,13 @@ Here is a video tutorial:
 ### Run processing across all subjects
 
 ~~~
-sct_run_batch -script batch_processing.sh -path-data <PATH_DATA_BIDS> -path-output <PATH_RESULTS> -jobs -1
+sct_run_batch -script batch_processing.sh -path-data $PATH_DATA_BIDS -path-output <PATH_RESULTS> -jobs -1
 ~~~
 
 To only run the processing in one subject (for debugging purpose), use this:
 
 ~~~
-sct_run_batch -script batch_processing.sh -path-data <PATH_DATA_BIDS> -path-output <PATH_RESULTS> -include-list sub-BB277
+sct_run_batch -script batch_processing.sh -path-data $PATH_DATA_BIDS -path-output <PATH_RESULTS> -include-list sub-BB277
 ~~~
 
 ### Run QC and manually correct the segmentations
