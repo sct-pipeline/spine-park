@@ -6,7 +6,7 @@ Pipeline for multicontrast analysis in PD patients.
 
 ### Install dependencies
 
-- [Install Spinal Cord Toolbox](https://spinalcordtoolbox.com/user_section/installation.html)
+- [Install Spinal Cord Toolbox](https://spinalcordtoolbox.com/user_section/installation.html) (tested on v6.3)
 - [Install manual-correction](https://github.com/spinalcordtoolbox/manual-correction?tab=readme-ov-file#2-installation)
 
 Clone this repository
