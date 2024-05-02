@@ -15,7 +15,19 @@
 
 # Parameters
 vertebral_levels="2:12"  # Vertebral levels to extract metrics from. "2:12" means from C2 to T5 (included)
-
+# List of tracts to extract:
+tracts=(
+  "32,33"\
+  "52"\
+  "51"\
+  "53"\
+  "54,55"\
+  "30,31"\
+  "34,35"\
+  "4,5"\
+  "4,5,8,9,10,11,16,17,18,19,20,21,22,23,24,25,26,27"\
+  "0,1,2,3,6,7,12,13,14,15"\
+)
 # The following global variables are retrieved from the caller sct_run_batch but could be overwritten by 
 # uncommenting the lines below:
 # PATH_DATA_PROCESSED="~/data_processed"
@@ -31,6 +43,10 @@ set -e
 
 # Exit if user presses CTRL+C (Linux) or CMD+C (OSX)
 trap "echo Caught Keyboard Interrupt within script. Exiting now.; exit" INT
+
+for tract in "${tracts[@]}"; do
+  echo "👉 Processing: ${tract}"
+done
 
 
 # CONVENIENCE FUNCTIONS
@@ -264,10 +280,13 @@ for file_dwi in "${files_dwi[@]}"; do
   # Compute DTI metrics in WM
   dti_metrics=(FA MD RD AD)
   for dti_metric in ${dti_metrics[@]}; do
-    sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l 51 -vert "${vertebral_levels}" \
-                      -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${PATH_RESULTS}/DWI_${dti_metric}.csv -append 1
+    for tract in ${tracts[@]}; do
+      file_out=${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}.csv
+      sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${file_out} -append 1
+    done
   done
 done
+
 # TODO
 # Average metrics within vertebral levels from output CSV files
 
