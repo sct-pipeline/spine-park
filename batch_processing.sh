@@ -278,7 +278,7 @@ for file_dwi in "${files_dwi[@]}"; do
   for dti_metric in ${dti_metrics[@]}; do
     for tract in ${tracts[@]}; do
       file_out=${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}.csv
-      sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o ${file_out} -append 1
+      sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
     done
   done
 done
