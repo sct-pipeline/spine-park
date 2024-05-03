@@ -18,10 +18,10 @@ vertebral_levels="2:12"  # Vertebral levels to extract metrics from. "2:12" mean
 # List of tracts to extract:
 tracts=(
   "32,33"\
-  "52"\
   "51"\
+  "52"\
   "53"\
-  "54,55"\
+  "4:13,14:29"\
   "30,31"\
   "34,35"\
   "4,5"\
