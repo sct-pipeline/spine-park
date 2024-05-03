@@ -44,10 +44,6 @@ set -e
 # Exit if user presses CTRL+C (Linux) or CMD+C (OSX)
 trap "echo Caught Keyboard Interrupt within script. Exiting now.; exit" INT
 
-for tract in "${tracts[@]}"; do
-  echo "👉 Processing: ${tract}"
-done
-
 
 # CONVENIENCE FUNCTIONS
 # =====================================================================================================================
