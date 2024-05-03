@@ -180,16 +180,11 @@ mv warp_"${file_mt0}"2PAM50_t1.nii.gz warp_mt2template.nii.gz
 sct_warp_template -d "${file_mt0}".nii.gz -w warp_template2mt.nii.gz -ofolder label_MT -qc "${PATH_QC}"
 # Compute mtr
 sct_compute_mtr -mt0 "${file_mt0}".nii.gz -mt1 "${file_mt1}"_reg.nii.gz
-# compute MTR in white matter between levels C2 and T5 (append across subjects)
-sct_extract_metric -i mtr.nii.gz -f label_MT/atlas -l 51 -vert "${vertebral_levels}" -vertfile label_MT/template/PAM50_levels.nii.gz \
-                   -perlevel 1 -method map -o "${PATH_RESULTS}/MTR_in_WM.csv" -append 1
-# compute MTR in dorsal column between levels C2 and T5 (append across subjects)
-sct_extract_metric -i mtr.nii.gz -f label_MT/atlas -l 53 -vert "${vertebral_levels}" -vertfile label_MT/template/PAM50_levels.nii.gz \
-                   -perlevel 1 -method map -o "${PATH_RESULTS}/MTR_in_DC.csv" -append 1
-# compute MTR in lateral corticospinal tracts between levels C2 and T5 (append across subjects)
-sct_extract_metric -i mtr.nii.gz -f label_MT/atlas -l 4,5 -vert "${vertebral_levels}" -vertfile label_MT/template/PAM50_levels.nii.gz \
-                   -perlevel 1 -method map -o "${PATH_RESULTS}/MTR_in_CST.csv" -append 1
-# Here you can add other tracts
+# compute MTR in various tracts
+for tract in ${tracts[@]}; do
+  file_out=${PATH_RESULTS}/MTR_${tract//,/-}.csv
+  sct_extract_metric -i mtr.nii.gz -f label_MT/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_MT/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
+done
 
 
 # MP2RAGE
@@ -219,10 +214,11 @@ mv warp_PAM50_t12"${file_uni}".nii.gz warp_template2t1.nii.gz
 mv warp_"${file_uni}"2PAM50_t1.nii.gz warp_t12template.nii.gz
 # Warp template
 sct_warp_template -d "${file_uni}".nii.gz -w warp_template2t1.nii.gz -ofolder label_T1 -qc "${PATH_QC}"
-# compute T1 in white matter between levels C2 and T5 (append across subjects)
-sct_extract_metric -i "${file_t1}".nii.gz -f label_T1/atlas -l 51 -vert "${vertebral_levels}" -vertfile label_T1/template/PAM50_levels.nii.gz \
-                   -perlevel 1 -method map -o "${PATH_RESULTS}/T1_in_WM.csv" -append 1
-# Here you can add other tracts
+# compute T1 in various tracts
+for tract in ${tracts[@]}; do
+  file_out=${PATH_RESULTS}/T1_${dti_metric}_${tract//,/-}.csv
+  sct_extract_metric -i "${file_t1}".nii.gz -f label_T1/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_T1/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
+done
 
 
 # DWI
@@ -273,7 +269,7 @@ for file_dwi in "${files_dwi[@]}"; do
   sct_warp_template -d ${file_dwi_mean}.nii.gz -w warp_PAM50_t12${file_dwi_mean}.nii.gz -ofolder label_${file_dwi} -qc ${PATH_QC} -qc-subject ${SUBJECT}
   # Compute DTI
   sct_dmri_compute_dti -i ${file_dwi}.nii.gz -bvec ${file_bvec} -bval ${file_bval} -method standard -o ${file_dwi}_
-  # Compute DTI metrics in WM
+  # Compute DTI metrics in various tracts
   dti_metrics=(FA MD RD AD)
   for dti_metric in ${dti_metrics[@]}; do
     for tract in ${tracts[@]}; do
