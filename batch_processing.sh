@@ -58,14 +58,15 @@ label_if_does_not_exist() {
   local file_seg="${2}"
   local label_values="${3}"
   # Update global variable with segmentation file name
-  FILELABEL="${file}"_label-disc
-  FILELABELMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/anat/"${FILELABEL}".nii.gz
+  FILELABEL="${file}"_label-vertebrae
+  FILELABELDISC="${file}"_label-disc
+  FILELABELMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/anat/"${FILELABELDISC}".nii.gz
   echo "Looking for manual label: ${FILELABELMANUAL}"
   if [[ -e "${FILELABELMANUAL}" ]]; then
     echo "Found! Using manual labels."
-    rsync -avzh "${FILELABELMANUAL}" "${FILELABEL}".nii.gz
+    rsync -avzh "${FILELABELMANUAL}" "${FILELABELDISC}".nii.gz
     # Create labeled segmentation
-    sct_label_utils -i "${file_seg}".nii.gz -disc "${FILELABEL}".nii.gz -o "${file_seg}"_labeled.nii.gz
+    sct_label_utils -i "${file_seg}".nii.gz -disc "${FILELABELDISC}".nii.gz -o "${file_seg}"_labeled.nii.gz
   else
     echo "Not found. Proceeding with automatic labeling."
     # Generate labeled segmentation
@@ -73,6 +74,7 @@ label_if_does_not_exist() {
   fi
   # Create labels in the cord at the specified mid-vertebral levels
   sct_label_utils -i "${file_seg}"_labeled.nii.gz -vert-body "${label_values}" -o "${FILELABEL}".nii.gz
+  sct_qc -i "${file}".nii.gz -s "${FILELABEL}".nii.gz -p sct_label_utils -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
 }
 
 segment_if_does_not_exist() {
