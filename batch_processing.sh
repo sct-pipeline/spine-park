@@ -282,7 +282,7 @@ for file_dwi in "${files_dwi[@]}"; do
     done
   done
   # Output file levels.csv to check the correspondance between vertebral levels and slices for each chunk
-  sct_extract_metric -i ${file_dwi}_FA.nii.gz -l 51 -f label_${file_dwi}/atlas/ -vert 1:12 -perlevel 1 -vertfile ${file_dwi}/template/PAM50_levels.nii.gz -o levels.csv -append 1 ; done
+  sct_extract_metric -i ${file_dwi}_FA.nii.gz -l 51 -f label_${file_dwi}/atlas/ -vert 1:12 -perlevel 1 -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o levels.csv -append 1 ; done
 done
 
 # TODO
