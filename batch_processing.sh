@@ -85,9 +85,15 @@ segment_if_does_not_exist() {
 
   local file="${1}"
   local contrast="${2}"
+  # Find if modality is 'anat' or 'dwi'
+  if [[ $file == *"_DWI_"* ]]; then
+    modality="dwi"
+  else
+    modality="anat"
+  fi
   # Update global variable with segmentation file name
   FILESEG="${file}"_seg
-  FILESEGMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/anat/"${FILESEG}".nii.gz
+  FILESEGMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/"${modality}"/"${FILESEG}".nii.gz
   echo
   echo "Looking for manual segmentation: ${FILESEGMANUAL}"
   if [[ -e "${FILESEGMANUAL}" ]]; then
@@ -240,7 +246,7 @@ done
 # DWI merging of slabs:
 # • Use a script that will combine the three CSV files (one per slab, with some overlap) and that will average the DTI 
 #   metrics within each vertebral level that exists across the three CSV files.
-cd ../dwi
+cd "${SUBJECT}"/dwi/
 # Get file names for every acquired chunks of DWI data
 files_dwi=(`ls "${SUBJECT}"_chunk-*_DWI.nii.gz`)
 for file_dwi in "${files_dwi[@]}"; do
