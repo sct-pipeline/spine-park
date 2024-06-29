@@ -292,7 +292,7 @@ for file_dwi in "${files_dwi[@]}"; do
       file_out=${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}.csv
       sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
       # Aggregate metrics across vertebral levels pertaining to adjacent chunks
-      python ${PATH_SCRIPT}/aggregate_chunks.py ${file_out} -o ${file_out}_aggregated.csv
+      python ${PATH_SCRIPT}/aggregate_chunks.py ${file_out} --output-csv ${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}_aggregated.csv
     done
   done
   # Output file levels.csv to check the correspondance between vertebral levels and slices for each chunk
