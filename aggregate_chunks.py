@@ -42,7 +42,7 @@ def aggregate_data(input_csv, output_csv):
 def main():
     parser = argparse.ArgumentParser(description='Aggregate MRI data.')
     parser.add_argument('input_csv', type=str, help='Path to the input CSV file.')
-    parser.add_argument('--output_csv', type=str, help='Path to the output CSV file.')
+    parser.add_argument('--output-csv', type=str, help='Path to the output CSV file.')
 
     args = parser.parse_args()
     

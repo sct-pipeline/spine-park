@@ -4,6 +4,9 @@
 # Processing of multi-contrast BIDS dataset of patients with Parkinson's disease. This script is designed to be run 
 # across multiple subjects in parallel using 'sct_run_batch', but it can also be used to run processing on a single 
 # subject. The input data is assumed to be in BIDS format.
+# 
+# IMPORTANT: This script MUST be run from the root folder of the repository, because it relies on Python scripts located 
+#  in the root folder.
 #
 # Usage:
 #   ./process_data.sh <SUBJECT>
@@ -43,6 +46,9 @@ set -e
 
 # Exit if user presses CTRL+C (Linux) or CMD+C (OSX)
 trap "echo Caught Keyboard Interrupt within script. Exiting now.; exit" INT
+
+# Save script path
+PATH_SCRIPT=$PWD
 
 
 # CONVENIENCE FUNCTIONS
@@ -285,6 +291,8 @@ for file_dwi in "${files_dwi[@]}"; do
     for tract in ${tracts[@]}; do
       file_out=${PATH_RESULTS}/DWI_${dti_metric}_${tract//,/-}.csv
       sct_extract_metric -i ${file_dwi}_${dti_metric}.nii.gz -f label_${file_dwi}/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
+      # Aggregate metrics across vertebral levels pertaining to adjacent chunks
+      python ${PATH_SCRIPT}/aggregate_chunks.py ${file_out} -o ${file_out}_aggregated.csv
     done
   done
   # Output file levels.csv to check the correspondance between vertebral levels and slices for each chunk
