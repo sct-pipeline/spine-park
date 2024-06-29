@@ -15,6 +15,11 @@ git clone https://github.com/sct-pipeline/spine-park.git
 cd spine-park
 ```
 
+Install Python dependencies
+```
+pip install -r requirements.txt
+```
+
 ### Declare variables
 
 ```bash
