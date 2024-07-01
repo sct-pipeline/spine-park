@@ -153,6 +153,8 @@ sct_warp_template -d "${file_t2}".nii.gz -w warp_template2anat.nii.gz -a 0 -ofol
 # Compute average CSA between C2 and T5 levels (append across subjects)
 sct_process_segmentation -i "${file_t2_seg}".nii.gz -vert "${vertebral_levels}" -vertfile label_T2w/template/PAM50_levels.nii.gz \
                          -perlevel 1 -o "${PATH_RESULTS}"/CSA.csv -append 1 -qc "${PATH_QC}"
+# Format CSV file
+python ${PATH_SCRIPT}/format_csv.py "${PATH_RESULTS}"/CSA.csv
 
 
 # MT
@@ -200,6 +202,8 @@ sct_compute_mtr -mt0 "${file_mt0}".nii.gz -mt1 "${file_mt1}"_reg.nii.gz
 for tract in ${tracts[@]}; do
   file_out=${PATH_RESULTS}/MTR_${tract//,/-}.csv
   sct_extract_metric -i mtr.nii.gz -f label_MT/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_MT/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
+  # Format CSV file
+  python ${PATH_SCRIPT}/format_csv.py ${file_out}
 done
 
 
@@ -234,6 +238,8 @@ sct_warp_template -d "${file_uni}".nii.gz -w warp_template2t1.nii.gz -ofolder la
 for tract in ${tracts[@]}; do
   file_out=${PATH_RESULTS}/T1_${dti_metric}_${tract//,/-}.csv
   sct_extract_metric -i "${file_t1}".nii.gz -f label_T1/atlas -l ${tract} -combine 1 -vert "${vertebral_levels}" -vertfile label_T1/template/PAM50_levels.nii.gz -perlevel 1 -method map -o ${file_out} -append 1
+  # Format CSV file
+  python ${PATH_SCRIPT}/format_csv.py ${file_out}
 done
 
 
