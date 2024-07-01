@@ -16,7 +16,7 @@ def aggregate_data(input_csv, output_csv):
     df = pd.read_csv(input_csv, sep=',')
 
     # Extract subject information ("sub-XXX"), assuming the subject identifier is between "sub-" and "_"
-    df['subject'] = df['Filename'].str.extract(r'(sub-[^_/]+)')
+    df['Subject'] = df['Filename'].str.extract(r'(sub-[^_/]+)')
 
     # Ensure VertLevel is treated as string
     df['VertLevel'] = df['VertLevel'].astype(str)
@@ -28,13 +28,18 @@ def aggregate_data(input_csv, output_csv):
     df['VertLevel'] = df['VertLevel'].astype(int)
 
     # Group by subject and vertebral level, then calculate weighted averages
-    aggregated_df = df.groupby(['subject', 'VertLevel']).apply(
+    aggregated_df = df.groupby(['Subject', 'VertLevel']).apply(
         lambda x: pd.Series({
             'Size [vox]': x['Size [vox]'].sum(),
             'MAP()': (x['Size [vox]'] * x['MAP()']).sum() / x['Size [vox]'].sum(),
-            'STD()': (x['Size [vox]'] * x['STD()']).sum() / x['Size [vox]'].sum()
+            'STD()': (x['Size [vox]'] * x['STD()']).sum() / x['Size [vox]'].sum(),
+            **x.iloc[0][['Timestamp', 'SCT Version', 'Filename', 'Label']].to_dict()
         })
     ).reset_index()
+
+    # Reorder the columns as specified
+    ordered_columns = ['Subject', 'VertLevel', 'Label', 'Size [vox]', 'MAP()', 'STD()', 'Timestamp', 'Filename', 'SCT Version']
+    aggregated_df = aggregated_df[ordered_columns]
 
     # Save the aggregated data to a new CSV file
     aggregated_df.to_csv(output_csv, sep=',', index=False)
