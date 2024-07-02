@@ -258,7 +258,7 @@ done
 # DWI merging of slabs:
 # • Use a script that will combine the three CSV files (one per slab, with some overlap) and that will average the DTI 
 #   metrics within each vertebral level that exists across the three CSV files.
-cd "${SUBJECT}"/dwi/
+cd ../dwi/
 # Get file names for every acquired chunks of DWI data
 files_dwi=(`ls "${SUBJECT}"_chunk-*_DWI.nii.gz`)
 for file_dwi in "${files_dwi[@]}"; do
