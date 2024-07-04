@@ -273,6 +273,7 @@ for file_dwi in "${files_dwi[@]}"; do
   file_dwi_seg="${FILESEG}"
   # Crop data for faster processing
   sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
+  file_dwi=${file_dwi}_crop
   # Motion correction
   sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline
   file_dwi=${file_dwi}_moco
