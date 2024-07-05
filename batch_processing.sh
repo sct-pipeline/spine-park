@@ -281,7 +281,7 @@ for file_dwi in "${files_dwi[@]}"; do
   # Segment spinal cord (only if it does not exist)
   segment_if_does_not_exist ${file_dwi_mean} "dwi"
   file_dwi_seg=$FILESEG
-  # Register template->dwi (using template-T1w as initial transformation)
+  # Register template->dwi (using T2w-to-template as initial transformation)
   sct_register_multimodal -i $SCT_DIR/data/PAM50/template/PAM50_t1.nii.gz \
                           -iseg $SCT_DIR/data/PAM50/template/PAM50_cord.nii.gz \
                           -d ${file_dwi_mean}.nii.gz -dseg ${file_dwi_seg}.nii.gz \
