@@ -69,17 +69,16 @@ label_if_does_not_exist() {
   FILELABELMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/anat/"${FILELABELDISC}".nii.gz
   echo "Looking for manual label: ${FILELABELMANUAL}"
   if [[ -e "${FILELABELMANUAL}" ]]; then
-    echo "Found! Using manual labels."
+    echo "Found! Copying manual labels."
     rsync -avzh "${FILELABELMANUAL}" "${FILELABELDISC}".nii.gz
-    # Create labeled segmentation
-    sct_label_utils -i "${file_seg}".nii.gz -disc "${FILELABELDISC}".nii.gz -o "${file_seg}"_labeled.nii.gz
   else
     echo "Not found. Proceeding with automatic labeling."
     # Generate labeled segmentation
     sct_label_vertebrae -i "${file}".nii.gz -s "${file_seg}".nii.gz -c t2 -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
+    # Rename the output labeled discs file to match the expected name
+    mv "${file_seg}"_labeled_discs.nii.gz "${FILELABEL}".nii.gz
   fi
-  # Create labels in the cord at the specified mid-vertebral levels
-  sct_label_utils -i "${file_seg}"_labeled.nii.gz -vert-body "${label_values}" -o "${FILELABEL}".nii.gz
+  # Generate QC report
   sct_qc -i "${file}".nii.gz -s "${FILELABEL}".nii.gz -p sct_label_utils -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
 }
 
@@ -144,7 +143,7 @@ file_t2_seg="${FILESEG}"
 label_if_does_not_exist "${file_t2}" "${file_t2_seg}" "2,12"
 file_label="${FILELABEL}"
 # Register to template
-sct_register_to_template -i "${file_t2}".nii.gz -s "${file_t2_seg}".nii.gz -l "${file_label}".nii.gz -c t2 \
+sct_register_to_template -i "${file_t2}".nii.gz -s "${file_t2_seg}".nii.gz -ldisc "${file_label}".nii.gz -c t2 \
                          -param step=1,type=seg,algo=centermassrot:step=2,type=im,algo=syn,iter=5,slicewise=1,metric=CC,smooth=0 \
                          -qc "${PATH_QC}"
 # Warp template
