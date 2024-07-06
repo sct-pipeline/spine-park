@@ -62,24 +62,21 @@ label_if_does_not_exist() {
 
   local file="${1}"
   local file_seg="${2}"
-  local label_values="${3}"
   # Update global variable with segmentation file name
-  FILELABEL="${file}"_label-vertebrae
-  FILELABELDISC="${file}"_label-disc
-  FILELABELMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/anat/"${FILELABELDISC}".nii.gz
+  FILELABEL="${file}"_label-disc
+  FILELABELMANUAL="${PATH_DATA}"/derivatives/labels/"${SUBJECT}"/anat/"${FILELABEL}".nii.gz
   echo "Looking for manual label: ${FILELABELMANUAL}"
   if [[ -e "${FILELABELMANUAL}" ]]; then
-    echo "Found! Using manual labels."
-    rsync -avzh "${FILELABELMANUAL}" "${FILELABELDISC}".nii.gz
-    # Create labeled segmentation
-    sct_label_utils -i "${file_seg}".nii.gz -disc "${FILELABELDISC}".nii.gz -o "${file_seg}"_labeled.nii.gz
+    echo "Found! Copying manual labels."
+    rsync -avzh "${FILELABELMANUAL}" "${FILELABEL}".nii.gz
   else
     echo "Not found. Proceeding with automatic labeling."
     # Generate labeled segmentation
     sct_label_vertebrae -i "${file}".nii.gz -s "${file_seg}".nii.gz -c t2 -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
+    # Rename the output labeled discs file to match the expected name
+    mv "${file_seg}"_labeled_discs.nii.gz "${FILELABEL}".nii.gz
   fi
-  # Create labels in the cord at the specified mid-vertebral levels
-  sct_label_utils -i "${file_seg}"_labeled.nii.gz -vert-body "${label_values}" -o "${FILELABEL}".nii.gz
+  # Generate QC report
   sct_qc -i "${file}".nii.gz -s "${FILELABEL}".nii.gz -p sct_label_utils -qc "${PATH_QC}" -qc-subject "${SUBJECT}"
 }
 
@@ -141,10 +138,10 @@ echo "👉 Processing: ${file_t2}"
 segment_if_does_not_exist "${file_t2}" "t2"
 file_t2_seg="${FILESEG}"
 # Create labels in the cord at mid-vertebral levels
-label_if_does_not_exist "${file_t2}" "${file_t2_seg}" "2,12"
+label_if_does_not_exist "${file_t2}" "${file_t2_seg}"
 file_label="${FILELABEL}"
 # Register to template
-sct_register_to_template -i "${file_t2}".nii.gz -s "${file_t2_seg}".nii.gz -l "${file_label}".nii.gz -c t2 \
+sct_register_to_template -i "${file_t2}".nii.gz -s "${file_t2_seg}".nii.gz -ldisc "${file_label}".nii.gz -c t2 \
                          -param step=1,type=seg,algo=centermassrot:step=2,type=im,algo=syn,iter=5,slicewise=1,metric=CC,smooth=0 \
                          -qc "${PATH_QC}"
 # Warp template
@@ -303,7 +300,7 @@ for file_dwi in "${files_dwi[@]}"; do
     done
   done
   # Output file levels.csv to check the correspondance between vertebral levels and slices for each chunk
-  sct_extract_metric -i ${file_dwi}_FA.nii.gz -l 51 -f label_${file_dwi}/atlas/ -vert 1:12 -perlevel 1 -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o levels.csv -append 1
+  sct_extract_metric -i ${file_dwi}_FA.nii.gz -l 51 -f label_${file_dwi}/atlas/ -vert "${vertebral_levels}" -perlevel 1 -vertfile label_${file_dwi}/template/PAM50_levels.nii.gz -o levels.csv -append 1
 done
 
 # TODO
