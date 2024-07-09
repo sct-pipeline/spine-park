@@ -272,7 +272,7 @@ for file_dwi in "${files_dwi[@]}"; do
   sct_crop_image -i "${file_dwi}".nii.gz -m "${file_dwi_seg}".nii.gz -dilate 15x15x0 -o "${file_dwi}"_crop.nii.gz
   file_dwi=${file_dwi}_crop
   # Motion correction
-  sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline
+  sct_dmri_moco -i ${file_dwi}.nii.gz -bvec ${file_bvec} -x spline -param metric=CC
   file_dwi=${file_dwi}_moco
   file_dwi_mean=${file_dwi}_dwi_mean
   # Segment spinal cord (only if it does not exist)
